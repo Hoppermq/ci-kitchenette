@@ -1,0 +1,35 @@
+name: Go Lint
+description: "Run go linter"
+inputs:
+  go-version:
+    description: "GO version to use"
+    required: false
+    default: "1.21"
+  working-directory:
+    description: "Working directory"
+    required: false
+    default: "."
+  flags:
+    description: "Linter flag"
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup GO
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ inputs.go-version }}
+
+    - name: Install golangci-lint
+      shell: bash
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
+
+    - name: Run golangci-lint
+      shell: bash
+      run: golangci-lint run
