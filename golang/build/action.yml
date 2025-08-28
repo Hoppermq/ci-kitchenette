@@ -23,7 +23,7 @@ runs:
     - name: Setup GO
       uses: actions/setup-go@v5
       with:
-        go-version: ${{ inputes.go-version }}
+        go-version: ${{ inputs.go-version }}
 
     - name: Build Release
       shell: bash
