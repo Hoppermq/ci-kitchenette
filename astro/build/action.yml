@@ -1,0 +1,27 @@
+name: Astro build
+description: build astro sites
+inputs:
+  node-version:
+    description: "node version to use"
+    required: false
+    default: 24.1.0
+  working-directory:
+    description: "the current working directory"
+    required: false
+    default: "."
+
+runs:
+  using: composite
+  steps:
+    - name: checkout code
+      uses: actions/checkout@v5
+
+    - name: setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: { { inputs.node-version } }
+        cache: "pnpm"
+
+    - name: run astro build
+      shell: bash
+      run: pnpm run build
