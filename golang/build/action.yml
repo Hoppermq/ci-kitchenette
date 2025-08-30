@@ -25,6 +25,11 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
 
+    - name: Install Task
+      uses: arduino/setup-task@v2
+      with:
+        version: 3.x
+
     - name: Build Release
       shell: bash
       run: task build
