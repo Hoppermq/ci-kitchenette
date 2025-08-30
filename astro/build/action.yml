@@ -19,7 +19,7 @@ runs:
     - name: setup node
       uses: actions/setup-node@v4
       with:
-        node-version: { { inputs.node-version } }
+        node-version: ${{ inputs.node-version }}
         cache: "pnpm"
 
     - name: run astro build
