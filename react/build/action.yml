@@ -1,0 +1,32 @@
+name: React build
+description: build react websites
+inputs:
+  bun-version:
+    description: "bun version to use"
+    required: false
+    default: 1.2.0
+  working-directory:
+    descritpion: "the current working directory"
+    required: false
+    default: "."
+
+runs:
+  using: composite
+  steps:
+    - name: checkout code
+      uses: action/checkout@v5
+
+    - name: install bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: ${{ inputs.bun-version }}
+
+    - name: install deps
+      shell: bash
+      run: bun install
+      working-directory: ${{ inputs.working-directory }}
+
+    - name: run react build
+      shell: bash
+      run: bun run build
+      working-directory: ${{ inputs.working-directory }}
