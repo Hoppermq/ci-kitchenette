@@ -28,7 +28,7 @@ runs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ inputs.go-version }}
-        cache-dependancy-path: |
+        cache-dependency-path: |
           go.sum
           go.mod
 
