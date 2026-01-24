@@ -16,8 +16,8 @@ inputs:
     required: false
     default: "."
 
-  flags:
-    description: "Linter flags"
+  args:
+    description: "golangci-lint arguments (e.g. --timeout=5m)"
     required: false
     default: ""
 
@@ -32,32 +32,9 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
 
-    - name: Clean existing cache directory
-      shell: bash
-      run: |
-        # Remove existing cache to prevent tar extraction errors
-        # This addresses the "Cannot open: File exists" error during cache restore
-        # The cache will be repopulated from the GitHub cache if available
-        if [ -d ~/.cache/golangci-lint ]; then
-          echo "Removing existing golangci-lint cache directory to prevent restoration conflicts..."
-          rm -rf ~/.cache/golangci-lint
-        fi
-
-    - name: Cache golangci-lint
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/golangci-lint
-        key: golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-${{ hashFiles('**/go.sum', '**/go.mod') }}
-        restore-keys: |
-          golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-
-          golangci-lint-cache-${{ runner.os }}-
-
-    - name: Install golangci-lint
-      shell: bash
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${{ inputs.golangci-lint-version }}
-
     - name: Run golangci-lint
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: golangci-lint run -v ${{ inputs.flags }}
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: ${{ inputs.golangci-lint-version }}
+        working-directory: ${{ inputs.working-directory }}
+        args: -v ${{ inputs.args }}
