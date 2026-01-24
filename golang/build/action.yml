@@ -24,6 +24,12 @@ runs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ inputs.go-version }}
+        cache: true
+
+    - name: Clean Go cache before restore
+      shell: bash
+      run: go clean -modcache
+      continue-on-error: true
 
     - name: Install Task
       uses: arduino/setup-task@v2
