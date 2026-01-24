@@ -35,16 +35,19 @@ runs:
     - name: Clean existing cache directory
       shell: bash
       run: |
+        # Remove existing cache to prevent tar extraction errors
+        # This addresses the "Cannot open: File exists" error during cache restore
+        # The cache will be repopulated from the GitHub cache if available
         if [ -d ~/.cache/golangci-lint ]; then
-          echo "Cleaning existing golangci-lint cache directory..."
+          echo "Removing existing golangci-lint cache directory to prevent restoration conflicts..."
           rm -rf ~/.cache/golangci-lint
         fi
 
     - name: Cache golangci-lint
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/golangci-lint
-        key: golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-${{ hashFiles('**/*.go', '**/go.sum', '**/go.mod') }}
+        key: golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-${{ hashFiles('**/go.sum', '**/go.mod') }}
         restore-keys: |
           golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-
           golangci-lint-cache-${{ runner.os }}-
