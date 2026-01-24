@@ -6,6 +6,11 @@ inputs:
     required: false
     default: "1.21"
 
+  golangci-lint-version:
+    description: "golangci-lint version to use"
+    required: false
+    default: "v1.52.2"
+
   working-directory:
     description: "Working directory"
     required: false
@@ -27,20 +32,29 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
 
+    - name: Clean existing cache directory
+      shell: bash
+      run: |
+        if [ -d ~/.cache/golangci-lint ]; then
+          echo "Cleaning existing golangci-lint cache directory..."
+          rm -rf ~/.cache/golangci-lint
+        fi
+
     - name: Cache golangci-lint
       uses: actions/cache@v3
       with:
         path: ~/.cache/golangci-lint
-        key: golangci-cache-${{ runner.os }}-${{ hashFiles('**/*.mod') }}
+        key: golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-${{ hashFiles('**/*.go', '**/go.sum', '**/go.mod') }}
         restore-keys: |
-          golangci-cache-${{ runner.os }}-
+          golangci-lint-cache-${{ runner.os }}-${{ inputs.golangci-lint-version }}-
+          golangci-lint-cache-${{ runner.os }}-
 
     - name: Install golangci-lint
       shell: bash
       run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
+        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin ${{ inputs.golangci-lint-version }}
 
     - name: Run golangci-lint
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      run: golangci-lint run ${{ inputs.flags }}
+      run: golangci-lint run -v ${{ inputs.flags }}
