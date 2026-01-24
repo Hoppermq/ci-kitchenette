@@ -24,14 +24,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
-
     - name: Setup GO
       uses: actions/setup-go@v5
       with:
         go-version: ${{ inputs.go-version }}
-        cache: true
+        cache-dependancy-path: |
+          go.sum
+          go.mod
 
     - name: Clean Go cache before restore
       shell: bash
