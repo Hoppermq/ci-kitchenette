@@ -6,13 +6,18 @@ inputs:
     required: false
     default: "1.21"
 
+  golangci-lint-version:
+    description: "golangci-lint version to use"
+    required: false
+    default: "v1.52.2"
+
   working-directory:
     description: "Working directory"
     required: false
     default: "."
 
-  flags:
-    description: "Linter flags"
+  args:
+    description: "golangci-lint arguments (e.g. --timeout=5m)"
     required: false
     default: ""
 
@@ -27,20 +32,9 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
 
-    - name: Cache golangci-lint
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/golangci-lint
-        key: golangci-cache-${{ runner.os }}-${{ hashFiles('**/*.mod') }}
-        restore-keys: |
-          golangci-cache-${{ runner.os }}-
-
-    - name: Install golangci-lint
-      shell: bash
-      run: |
-        curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
-
     - name: Run golangci-lint
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-      run: golangci-lint run ${{ inputs.flags }}
+      uses: golangci/golangci-lint-action@v6
+      with:
+        version: ${{ inputs.golangci-lint-version }}
+        working-directory: ${{ inputs.working-directory }}
+        args: -v ${{ inputs.args }}
